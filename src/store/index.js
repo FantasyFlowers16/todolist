@@ -44,7 +44,7 @@ export default new Vuex.Store({
           console.log(error)
         })
     },
-    deleteTodo ({ commit }, id) {
+    deleteTodo (id) {
       axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
         .then((response) => {
           console.log(response)
