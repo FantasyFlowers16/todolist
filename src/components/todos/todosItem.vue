@@ -1,7 +1,6 @@
 <template>
-  <div class="todos-item" @dblclick="editTodo" >
-      <v-icon class="todos-item__edit" @click="deleteTodo" @click.stop="openPopup=true" >mdi-delete</v-icon>
-      <v-icon class="todos-item__delete" @click="editTodo" >mdi-circle-edit-outline</v-icon>
+  <div  class="todos-item" @dblclick="editTodo" :class="{_delete: activeToDelete}">
+    <v-icon class="todos-item__delete"  @click="activeToDeleteTodo" >mdi-delete</v-icon>
     <div class="todos-item__title">{{todo.title}}</div>
     <div class="todos-item__text">Created by <span class="todos-item__text-number">1</span></div>
     <Popup v-model="openPopup" :type="'update'" :item="todo" :headerText="'Редактирование задачи'" />
@@ -17,7 +16,8 @@ export default {
   components: { Popup },
   data () {
     return {
-      openPopup: false
+      openPopup: false,
+      activeToDelete: false
     }
   },
   computed: {
@@ -26,65 +26,79 @@ export default {
     }
   },
   methods: {
-    deleteTodo () {
-      // типо на сервере
-      const data = {
-        id: this.todo.id,
-        title: this.text
-      }
-      this.$store.dispatch('updateTodo', data)
-      // локально
-      this.$store.commit('setTodoList', this.getToDoList.filter(el => el.id !== this.todo.id))
+    activeToDeleteTodo () {
+      this.activeToDelete = !this.activeToDelete
+      const data = [...this.getToDoList]
+      data.forEach(el => {
+        if (el.id === this.todo.id) {
+          el.toDelete = !el.toDelete
+        }
+      })
+      this.$store.commit('setTodoList', data)
     },
     editTodo () {
       this.openPopup = true
     }
   }
-
 }
 </script>
 
 <style lang="scss">
+
+@import '../../assets/scss/variables.scss';
+@import '../../assets/scss/mixin.scss';
+
 .todos-item{
-  background: #FCFCFD;
+  background: $bgLight;
   box-shadow: 0px 0.5px 2px rgba(16, 24, 40, 0.3);
   border-radius: 8px;
   position: relative;
   padding: 20px;
   margin-bottom: 24px;
-  transition: box-shadow .3s, background .3s ease;
+  transition: box-shadow .3s, background .3s ease, border .3s ease;
   cursor: pointer;
+  border: 1px solid transparent;
+  &._delete{
+    border: 1px solid $cRed
+  }
   &:hover{
     box-shadow: 0px 0.5px 2px rgba(16, 24, 40, 0.5);
-    background: #f0f0f3;
+    background: $bgLightHover;
     .todos-item__delete ,.todos-item__edit{
       opacity: 1;
     }
-
   }
   &__title{
-    font: 700 20px/150% 'karla', sans-serif;
+    @include Font(700,14px, 21px);
     margin-bottom: 6px;
   }
   &__text{
-    font: 700 14px/150% 'karla', sans-serif;
-    color: #98A2B3;
+    @include Font(700,12px,16px);
+    color: $textGray2;
   }
   &__text-number{
-    color: #667085;
+    color: $textGray3;
   }
-  &__delete,&__edit{
+  &__delete{
     position: absolute!important;
     top: 5px;
     right: 10px;
     opacity: 0;
     transition: opacity .3s;
     &:hover{
-      color: red;
+      color: $cRed;
     }
   }
-  &__edit{
-    right: 30px;
+}
+
+@media screen and (min-width: 1280px) {
+  .todos-item{
+    &__title{
+      @include Font(700,20px,30px);
+    }
+    &__text{
+      @include Font(700,14px,21px);
+    }
   }
 }
 

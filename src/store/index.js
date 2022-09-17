@@ -8,6 +8,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     toDoList: [],
+    loading: false,
     userId: 1
   },
   getters: {
@@ -16,19 +17,29 @@ export default new Vuex.Store({
     },
     getUserId: state => {
       return state.userId
+    },
+    getLoading: state => {
+      return state.loading
     }
   },
   mutations: {
     setTodoList (state, value) {
       state.toDoList = value
+    },
+    setLoading (state, value) {
+      state.loading = value
     }
   },
   actions: {
     updateTodoList ({ commit }) {
+      commit('setLoading', true)
       axios.get('https://jsonplaceholder.typicode.com/todos').then((response) => {
+        response.data.forEach(el => { el.toDelete = false })
         commit('setTodoList', response.data)
+        commit('setLoading', false)
       })
         .catch((error) => {
+          commit('setLoading', false)
           // обработка ошибок
           console.log(error)
         })
