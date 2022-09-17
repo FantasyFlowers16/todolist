@@ -54,7 +54,7 @@ export default new Vuex.Store({
           console.log(error)
         })
     },
-    addTodo ({ commit }, data) {
+    addTodo (data) {
       axios.patch(`https://jsonplaceholder.typicode.com/todos/${data.id}`, data)
         .then((response) => {
           console.log(response)
@@ -64,7 +64,7 @@ export default new Vuex.Store({
           console.log(error)
         })
     },
-    updateTodo ({ commit }, data) {
+    updateTodo (data) {
       axios.put(`https://jsonplaceholder.typicode.com/todos/${data.id}`, { title: data.title })
         .then((response) => {
           console.log(response)
